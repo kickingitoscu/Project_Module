@@ -24,6 +24,7 @@
         </label>
         <div class="preview-container mt-4" v-if="files.length">
           <div v-for="file in files" :key="file.name" class="preview-card">
+            <img class="preview-img"  :src="generateURL(file)"  />
             <p>
               {{ file.name }}
             </p>
@@ -97,6 +98,13 @@
       },
       remove(i) {
         this.files.splice(i, 1);
+      },
+      generateURL(file) {
+        let fileSrc = URL.createObjectURL(file);
+        setTimeout(() => {
+            URL.revokeObjectURL(fileSrc);
+        }, 1000);
+        return fileSrc;
       },
     },
   };

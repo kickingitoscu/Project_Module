@@ -1,5 +1,5 @@
 <template>
-  <DropFile></DropFile>
+  <DropFile ref="DropFile"></DropFile>
   <button @click="onSubmit">Create posts</button>
 </template>
 
@@ -12,9 +12,19 @@ export default {
     DropFile,
 },
 methods: {
-  onSubmit() {
-    console.debug('method called');
+  async onSubmit() {
+    const response = await fetch("api/uploadFiles", {
+      method: "POST",
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      body: this.$refs.DropFile.files,
+    });
+    const data = await response.json();
+    console.debug('func called');
+    console.log(data);
   }
+  
 }
 }
 </script>
