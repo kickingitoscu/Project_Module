@@ -7,6 +7,6 @@ public class PhotoImage
 {
 	public static void main(String[] args) throws IOException
 	{
-		new GeneratingPictures().generatePictures( new PhotoImageLoader().loadByFileName( args[0] ));
+		new GeneratingPictures().generatePictures(new PhotoImageLoader().loadByFileName(args[0]));	
 	}
 }

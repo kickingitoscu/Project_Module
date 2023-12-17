@@ -54,7 +54,7 @@ router['post']('/api/uploadFiles', upload.fields([
     const basePath = `./uploads/${request.sessionID}`;
     for(const image of request.files.images) {
         const imagePath = `${basePath}/raw/${image.originalname}`;
-        const outputDirectory = `${basePath}/versions-${image.originalname.substring(0, image.originalname.length - 4)}`;
+        const outputDirectory = `${basePath}/versions-${image.originalname.substring(0, image.originalname.length - 4)}/`;
         if (!fs.existsSync(outputDirectory)) fs.mkdirSync(outputDirectory);
         const bashParameterList = ["create-properties.sh", `./uploads/${request.sessionID}`, imagePath, outputDirectory];
         if (!fs.existsSync(`${basePath}/images.properties`)) bashParameterList.push(...[request.body.header, request.body.subheader])
@@ -77,8 +77,8 @@ router['post']('/api/uploadFiles', upload.fields([
             }); 
         });
         await new Promise((resolve, reject) => {
-            
-            const process = spawn('java', ["./generator/src/main/java/de/fhws/fiw/instagram/photoImage/PhotoImage.java", `${basePath}/images.properties`]);
+            const classPath = "/usr/src/project/generator/target/classes"
+            const process = spawn('java', ["-cp", classPath, "de.fhws.fiw.instagram.photoImage.PhotoImage", `${basePath}/images.properties`]);
             process.stdout.on('data', (data) => {
                 console.log(`stdout: ${data}`);
             });
