@@ -2,14 +2,26 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "java",
+            "name": "PhotoImage",
+            "request": "launch",
+            "args": "uploads/yiGO5eXcNrPEJfo4N4_V5cqX0J0uDyR7/images.properties",
+            "classPaths": ["/usr/src/project/generator/target/classes"],
+            "mainClass": "de.fhws.fiw.instagram.photoImage.PhotoImage",
+            "projectName": "instagram"
+        },
+        {
             "name": "Launch via NPM",
             "request": "launch",
-            "runtimeArgs": ["run", "start"],
+            "runtimeArgs": [
+                "run",
+                "start"
+            ],
             "runtimeExecutable": "npm",
             "skipFiles": [
                 "<node_internals>/**"
             ],
             "type": "node"
-        },
+        }
     ]
 }
