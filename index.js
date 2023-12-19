@@ -3,8 +3,7 @@ import dotenv from 'dotenv';
 import multer from 'multer';
 import {spawn} from 'node:child_process';
 import session from 'express-session';
-
-
+import path from 'path';
 import * as fs from 'fs';
 
 function makeid(length) {
@@ -43,7 +42,16 @@ application.use(session({
     saveUninitialized: true
 }));
 
-router.use('/', express.static('./static'));
+const indexPath = path.join(path.resolve(), "./static", "index.html");
+router.use(express.static('./static'));
+
+router['get']("/posts/:param", (req, res) => {
+    res.sendFile(indexPath);
+});
+
+router['get']("/", (req, res) => {
+    res.sendFile(indexPath);
+});
 
 router['post']('/api/uploadFiles', upload.fields([
     { name: 'images'},
@@ -119,10 +127,14 @@ router['post']('/api/uploadFiles', upload.fields([
 
 
 
+router['get']("*", (req, res) => {
+    res.redirect("/");
+});
+
 
 const port = process.env.PORT;
-const path = process.env.HOST;
+const host = process.env.HOST;
 
 application.use(router).listen(port, async() => {
-    console.log(`HTTP server is up, ${path}:${port}`)
+    console.log(`HTTP server is up, ${host}:${port}`)
 })
