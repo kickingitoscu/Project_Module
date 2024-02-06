@@ -92,6 +92,23 @@ router['post']('/api/uploadFiles', upload.fields([
             });
               
             process.stderr.on('data', (data) => {
+                console.error(`stderr: ${data}`);
+                reject();
+            });
+            
+            process.on('close', (code) => {
+                console.log(`child process exited with code ${code}`);
+                resolve();
+            }); 
+        });
+
+        await new Promise((resolve, reject) => {
+            const process = spawn('python', ['./ml/main.py', outputDirectory]);
+            process.stdout.on('data', (data) => {
+                console.log(`stdout: ${data}`);
+            });
+              
+            process.stderr.on('data', (data) => {
             console.error(`stderr: ${data}`);
             reject();
             });
@@ -104,22 +121,6 @@ router['post']('/api/uploadFiles', upload.fields([
             
     }
     
-    await new Promise((resolve, reject) => {
-        const process = spawn('python', ['./ml/main.py']);
-        process.stdout.on('data', (data) => {
-            console.log(`stdout: ${data}`);
-        });
-          
-        process.stderr.on('data', (data) => {
-        console.error(`stderr: ${data}`);
-        reject();
-        });
-        
-        process.on('close', (code) => {
-        console.log(`child process exited with code ${code}`);
-        resolve();
-        }); 
-    });
     fs.rmSync(basePath, { recursive: true, force: true });
     response.json("some response");
 
