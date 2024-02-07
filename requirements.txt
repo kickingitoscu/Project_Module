@@ -1,0 +1,5 @@
+scikit-learn==1.3.2
+tensorflow==2.13.1
+Augmentor==0.2.12
+Pillow==10.2.0
+face_recognition==1.3.0

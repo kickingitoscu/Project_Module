@@ -60,6 +60,39 @@ router['post']('/api/uploadFiles', upload.fields([
   ]), async(request, response) => {
     console.log('called');
     const basePath = `./uploads/${request.sessionID}`;
+    let imagesWithFaceCovered = "";
+    await new Promise((resolve, reject) => {
+        const process = spawn('python', ['./ml/face_detection.py', `${basePath}/raw`]);
+            process.stdout.on('data', (data) => {
+                imagesWithFaceCovered += data.toString();
+            });
+              
+            process.stderr.on('data', (data) => {
+                console.error(`stderr: ${data}`);
+                reject();
+            });
+            
+            process.on('close', (code) => {
+                console.log(`child process exited with code ${code}`);
+                resolve();
+            }); 
+    });
+    imagesWithFaceCovered = eval(imagesWithFaceCovered);
+
+    for (const file of imagesWithFaceCovered) {
+        console.debug(file);
+        fs.unlink(file, (err => {
+            if (err) console.log(err);
+            else {
+                console.log("\nDeleted file: example_file.txt");
+            }
+        }));
+    }
+
+    if (fs.readdirSync(`${basePath}/raw`).length === 0) {
+        response.json({ok: false, cause: 'Your images are with faces in corners'});
+    }
+    let finalPredictions = {};
     for(const image of request.files.images) {
         const imagePath = `${basePath}/raw/${image.originalname}`;
         const outputDirectory = `${basePath}/versions-${image.originalname.substring(0, image.originalname.length - 4)}/`;
@@ -101,11 +134,12 @@ router['post']('/api/uploadFiles', upload.fields([
                 resolve();
             }); 
         });
-
+        
+        let buffer = ""
         await new Promise((resolve, reject) => {
             const process = spawn('python', ['./ml/main.py', outputDirectory]);
             process.stdout.on('data', (data) => {
-                console.log(`stdout: ${data}`);
+                buffer += data.toString();
             });
               
             process.stderr.on('data', (data) => {
@@ -118,6 +152,8 @@ router['post']('/api/uploadFiles', upload.fields([
             resolve();
             }); 
         });
+
+        finalPredictions = { ...finalPredictions, ...JSON.parse(buffer) };
             
     }
     
