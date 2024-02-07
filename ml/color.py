@@ -1,4 +1,8 @@
 from sklearn.cluster import KMeans
+import os
+from PIL import Image
+import numpy as np
+
 
 def get_dominant_colors_of_image(image, amount_of_colors = 5):
     image = image.reshape((image.shape[0] * image.shape[1], 3))
@@ -21,6 +25,12 @@ def check_resonation(image, colors_to_prevent):
       if tally == 3:
          return False
       tally = 0
-
-  # if tally is greater than 5 means that on it matched at least in one of the color palettes
-  return True
+  
+def detect_images_without_resonation(folder_path, colors_to_prevent):
+  to_reject = []
+  for filename in os.listdir(folder_path):
+     img = Image.open(os.path.join(folder_path, filename))
+     img = img.resize((224, 224))
+     if check_resonation(np.array(img), colors_to_prevent):
+        to_reject.append(filename)
+  return to_reject

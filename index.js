@@ -59,12 +59,12 @@ router['post']('/api/uploadFiles', upload.fields([
     { name: 'subheader', maxCount: 1 }
   ]), async(request, response) => {
     console.log('called');
+    let buffer = ""
     const basePath = `./uploads/${request.sessionID}`;
-    let imagesWithFaceCovered = "";
     await new Promise((resolve, reject) => {
-        const process = spawn('python', ['./ml/face_detection.py', `${basePath}/raw`]);
+        const process = spawn('python', ['./ml/principles.py', `${basePath}/raw`]);
             process.stdout.on('data', (data) => {
-                imagesWithFaceCovered += data.toString();
+                buffer += data.toString();
             });
               
             process.stderr.on('data', (data) => {
@@ -77,15 +77,12 @@ router['post']('/api/uploadFiles', upload.fields([
                 resolve();
             }); 
     });
-    imagesWithFaceCovered = eval(imagesWithFaceCovered);
+    const imagesToRemove = eval(buffer);
 
-    for (const file of imagesWithFaceCovered) {
+    for (const file of imagesToRemove) {
         console.debug(file);
         fs.unlink(file, (err => {
             if (err) console.log(err);
-            else {
-                console.log("\nDeleted file: example_file.txt");
-            }
         }));
     }
 
@@ -135,7 +132,7 @@ router['post']('/api/uploadFiles', upload.fields([
             }); 
         });
         
-        let buffer = ""
+        buffer = ""
         await new Promise((resolve, reject) => {
             const process = spawn('python', ['./ml/main.py', outputDirectory]);
             process.stdout.on('data', (data) => {
@@ -158,7 +155,10 @@ router['post']('/api/uploadFiles', upload.fields([
     }
     
     fs.rmSync(basePath, { recursive: true, force: true });
-    response.json("some response");
+    response.json({
+        ok: true,
+        results: finalPredictions
+    });
 
 });
 

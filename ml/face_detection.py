@@ -54,12 +54,3 @@ def process_images_in_folder(folder_path):
             to_reject.extend(reject_list)
 
     return to_generator, to_reject
-
-# Replace 'your_folder_path' with the path to your image folder
-folder_path = sys.argv[1]
-
-_, to_reject = process_images_in_folder(folder_path)
-
-print(to_reject)
-
-

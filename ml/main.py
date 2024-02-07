@@ -4,22 +4,17 @@ import numpy as np
 import json
 import sys
 from itertools import chain
-import warnings
 
 from sklearn.preprocessing import StandardScaler
 
-from color import check_resonation
 
 # from sklearn.preprocessing import StandardScaler
 # from sklearn.model_selection import train_test_split
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-warnings.filterwarnings("ignore")
 import tensorflow as tf
 
 
 image_path = sys.argv[1]
-colors_to_prevent = np.load('./ml/models/color_palette.npz')['colors']
-images_without_resonation = []
 
 def load_images_from_folder(data_path):
     properties = []
@@ -30,8 +25,6 @@ def load_images_from_folder(data_path):
             if img is not None:
                 # Convert the image to the desired format (e.g., RGB)
                 img = np.array(img.resize((200,200)))
-                if not check_resonation(img, colors_to_prevent):
-                    images_without_resonation.append(filename)
                 properties.append({
                     'name': filename,
                     'data': img
@@ -60,6 +53,6 @@ model = tf.keras.models.load_model('./ml/models/beautiful_model_v2.h5')
 infered_ranks = list(chain(*model.predict(images, verbose=0).tolist()))
 results = {}
 for props, rank in zip(images_properties, infered_ranks):
-    results[props['name']] = rank if props['name'] not in images_without_resonation else 0.75 * rank
+    results[props['name']] = rank
 
 print(json.dumps(results))
