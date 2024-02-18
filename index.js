@@ -59,6 +59,15 @@ router['post']('/api/uploadFiles', upload.fields([
     { name: 'header', maxCount: 1 },
     { name: 'subheader', maxCount: 1 }
   ]), async(request, response) => {
+    if (!request.body.header || !request.body.subheader) {
+        response.status(403).json({msg: "Either header or subheader is not specified!"});
+        return;
+    }
+    if (!('images' in request.files)) {
+        response.status(403).json({msg: "No images provided!"});
+        return;
+    }
+
     let buffer = ""
     const basePath = `./uploads/${request.sessionID}`;
     await new Promise((resolve, reject) => {
@@ -86,8 +95,10 @@ router['post']('/api/uploadFiles', upload.fields([
     }
 
     if (fs.readdirSync(`${basePath}/raw`).length === 0) {
-        response.json({ok: false, cause: 'Your images are with faces in corners'});
+        response.status(403).json({msg: "All the provided images are not valid: either faces in the corners or color palette contains non-THWS-colors!"});
+        return;
     }
+
     let finalPredictions = {};
     for(const image of request.files.images) {
         const imagePath = `${basePath}/raw/${image.originalname}`;
