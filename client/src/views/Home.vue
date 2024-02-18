@@ -37,8 +37,7 @@
         body: formData,
       });
       const data = await response.json();
-      console.debug(data);
-      this.$router.push(`/posts/12345`);
+      await this.$router.push(`/posts/${data.id}`);
     }
     
   }

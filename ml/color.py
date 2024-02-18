@@ -3,6 +3,11 @@ import os
 from PIL import Image
 import numpy as np
 
+import warnings
+
+# Disable all warnings
+warnings.filterwarnings("ignore")
+
 
 def get_dominant_colors_of_image(image, amount_of_colors = 5):
     image = image.reshape((image.shape[0] * image.shape[1], 3))
@@ -29,8 +34,10 @@ def check_resonation(image, colors_to_prevent):
 def detect_images_without_resonation(folder_path, colors_to_prevent):
   to_reject = []
   for filename in os.listdir(folder_path):
-     img = Image.open(os.path.join(folder_path, filename))
-     img = img.resize((224, 224))
-     if check_resonation(np.array(img), colors_to_prevent):
+    img = Image.open(os.path.join(folder_path, filename))
+    if img.mode != 'RGB':
+      img = img.convert("RGB")
+    img = img.resize((224, 224))
+    if check_resonation(np.array(img), colors_to_prevent):
         to_reject.append(filename)
   return to_reject

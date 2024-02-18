@@ -16,6 +16,7 @@ public class GeneratingPictures
 	}
 
 	private void generateDifferentPictures( PhotoImageModel data)throws IOException{
+		int i = 0;
 		for( ComponentPropertiesConfig textConfig: ComponentPropertiesData.textProperties){
 			for( ColorConfig colorConfig: ColorData.allColorConfigurationsPhoto)
 			{
@@ -23,16 +24,11 @@ public class GeneratingPictures
 																	 .andColorConfig( colorConfig )
 																	 .andComponentPropertiesConfig( textConfig )
 																	 .generate();
-
-				writeImage( image, colorConfig , textConfig);
+				String path = outputPath+String.valueOf(i)+".jpg";
+				ImageIO.write(image, "jpeg", new File(path));
+				i++;
 			}
 		}
-	}
-
-	private void writeImage(BufferedImage image, ColorConfig colorConfig, ComponentPropertiesConfig textConfig) throws IOException
-	{
-		String path = outputPath+textConfig.getName()+"_"+colorConfig.getName()+".jpg";
-		ImageIO.write(image, "jpeg", new File(path));
 	}
 
 	private void setOutputPath(String path){

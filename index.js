@@ -29,6 +29,7 @@ const storage = multer.diskStorage({  destination: function (req, file, cb) {
     cb(null, `${provisionalFolder}/raw/`); 
   },
   filename: function (req, file, cb) {
+    file.originalname = makeid(5) + file.originalname.substring(file.originalname.lastIndexOf('.'));
     cb(null, file.originalname); 
   } })
 // const storage = multer.memoryStorage(); // You can define your storage settings
@@ -58,7 +59,6 @@ router['post']('/api/uploadFiles', upload.fields([
     { name: 'header', maxCount: 1 },
     { name: 'subheader', maxCount: 1 }
   ]), async(request, response) => {
-    console.log('called');
     let buffer = ""
     const basePath = `./uploads/${request.sessionID}`;
     await new Promise((resolve, reject) => {
@@ -80,7 +80,6 @@ router['post']('/api/uploadFiles', upload.fields([
     const imagesToRemove = eval(buffer);
 
     for (const file of imagesToRemove) {
-        console.debug(file);
         fs.unlink(file, (err => {
             if (err) console.log(err);
         }));
@@ -134,14 +133,16 @@ router['post']('/api/uploadFiles', upload.fields([
         
         buffer = ""
         await new Promise((resolve, reject) => {
-            const process = spawn('python', ['./ml/main.py', outputDirectory]);
+            const process = spawn('python', ['./ml/main.py', outputDirectory], {
+                maxBuffer: 1000 * 1024 * 1024
+              });
             process.stdout.on('data', (data) => {
                 buffer += data.toString();
             });
               
             process.stderr.on('data', (data) => {
-            console.error(`stderr: ${data}`);
-            reject();
+                console.error(`stderr: ${data}`);
+                reject();
             });
             
             process.on('close', (code) => {
@@ -149,20 +150,50 @@ router['post']('/api/uploadFiles', upload.fields([
             resolve();
             }); 
         });
+        finalPredictions = { ...finalPredictions, ...JSON.parse(buffer) };       
+    }
+    const imageEntries = Object.entries(finalPredictions);
 
-        finalPredictions = { ...finalPredictions, ...JSON.parse(buffer) };
-            
+    // Sort the array based on values in descending order
+    imageEntries.sort((a, b) => b[1] - a[1]);
+
+    // Return the first 5 key-value pairs
+    const topFive = imageEntries.slice(0, 5);
+    const folderId = makeid(16);
+    const finalFolder = 'final/' + folderId;
+    fs.mkdirSync(finalFolder);
+    for (const [imagePath, rank] of topFive) {
+        fs.rename(basePath + '/' + imagePath, finalFolder + `/${rank.toString()}_${makeid(5)}${imagePath.substring(imagePath.length - 4)}`, (err) => {
+            if (err) {
+              console.error('Error moving the file:', err);
+            } else {
+              console.log('File moved successfully.');
+            }
+          });
     }
     
     fs.rmSync(basePath, { recursive: true, force: true });
     response.json({
         ok: true,
-        results: finalPredictions
+        id: folderId
     });
 
 });
 
-
+router['get']('/getPosts', (req, res) => {
+    const id = req.query.id;
+    const files = [];
+    const base = './final/' + id + '/';
+    for (const filename of fs.readdirSync(base)) {
+        const fileData = fs.readFileSync(base + filename);
+        files.push({
+            rank: parseFloat(filename.split('_')[0]),
+            data: fileData.toString('base64')
+        });
+    }
+    fs.rmSync(base, { recursive: true, force: true });
+    res.json({images: files});
+});
 
 router['get']("*", (req, res) => {
     res.redirect("/");
