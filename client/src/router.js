@@ -13,12 +13,12 @@ const routes = [
     name: "Posts",
     component: Posts,
     beforeEnter: (to, from, next) => {
-      if (from.path !== '/') {
-        next('/');
+      if (from.path !== "/") {
+        next("/");
       } else {
         next();
       }
-    }
+    },
   },
 ];
 
