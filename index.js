@@ -70,22 +70,27 @@ router['post']('/api/uploadFiles', upload.fields([
 
     let buffer = ""
     const basePath = `./uploads/${request.sessionID}`;
-    await new Promise((resolve, reject) => {
-        const process = spawn('python', ['./ml/principles.py', `${basePath}/raw`]);
-            process.stdout.on('data', (data) => {
-                buffer += data.toString();
-            });
-              
-            process.stderr.on('data', (data) => {
-                console.error(`stderr: ${data}`);
-                reject();
-            });
-            
-            process.on('close', (code) => {
-                console.log(`child process exited with code ${code}`);
-                resolve();
-            }); 
-    });
+    try {
+        await new Promise((resolve, reject) => {
+            const process = spawn('python', ['./ml/principles.py', `${basePath}/raw`]);
+                process.stdout.on('data', (data) => {
+                    buffer += data.toString();
+                });
+                  
+                process.stderr.on('data', (data) => {
+                    console.error(`stderr: ${data}`);
+                    reject();
+                });
+                
+                process.on('close', (code) => {
+                    console.log(`child process exited with code ${code}`);
+                    resolve();
+                }); 
+        });
+    } catch {
+        response.status(403).json({msg: "Design principle component does not work!"});
+        return;
+    }
     const imagesToRemove = eval(buffer);
 
     for (const file of imagesToRemove) {
@@ -107,60 +112,75 @@ router['post']('/api/uploadFiles', upload.fields([
         const bashParameterList = ["create-properties.sh", `./uploads/${request.sessionID}`, imagePath, outputDirectory];
         if (!fs.existsSync(`${basePath}/images.properties`)) bashParameterList.push(...[request.body.header, request.body.subheader])
         
-        await new Promise((resolve, reject) => {
+        try {
+            await new Promise((resolve, reject) => {
             
-            const process = spawn('bash', bashParameterList);
-            process.stdout.on('data', (data) => {
-                console.log(`stdout: ${data}`);
-            });
-              
-            process.stderr.on('data', (data) => {
-            console.error(`stderr: ${data}`);
-            reject();
-            });
-            
-            process.on('close', (code) => {
-            console.log(`child process exited with code ${code}`);
-            resolve();
-            }); 
-        });
-        await new Promise((resolve, reject) => {
-            const classPath = "/usr/src/project/generator/target/classes"
-            const process = spawn('java', ["-cp", classPath, "de.fhws.fiw.instagram.photoImage.PhotoImage", `${basePath}/images.properties`]);
-            process.stdout.on('data', (data) => {
-                console.log(`stdout: ${data}`);
-            });
-              
-            process.stderr.on('data', (data) => {
+                const process = spawn('bash', bashParameterList);
+                process.stdout.on('data', (data) => {
+                    console.log(`stdout: ${data}`);
+                });
+                  
+                process.stderr.on('data', (data) => {
                 console.error(`stderr: ${data}`);
                 reject();
-            });
-            
-            process.on('close', (code) => {
+                });
+                
+                process.on('close', (code) => {
                 console.log(`child process exited with code ${code}`);
                 resolve();
-            }); 
-        });
+                }); 
+            });
+        } catch {
+            response.status(403).json({msg: "Unexpected bash error!"});
+            return;
+        }
+        try {
+            await new Promise((resolve, reject) => {
+                const classPath = "/usr/src/project/generator/target/classes"
+                const process = spawn('java', ["-cp", classPath, "de.fhws.fiw.instagram.photoImage.PhotoImage", `${basePath}/images.properties`]);
+                process.stdout.on('data', (data) => {
+                    console.log(`stdout: ${data}`);
+                });
+                  
+                process.stderr.on('data', (data) => {
+                    console.error(`stderr: ${data}`);
+                    reject();
+                });
+                
+                process.on('close', (code) => {
+                    console.log(`child process exited with code ${code}`);
+                    resolve();
+                }); 
+            });
+        } catch {
+            response.status(403).json({msg: "Generator is disabled!"});
+            return;
+        }
         
         buffer = ""
-        await new Promise((resolve, reject) => {
-            const process = spawn('python', ['./ml/main.py', outputDirectory], {
-                maxBuffer: 1000 * 1024 * 1024
-              });
-            process.stdout.on('data', (data) => {
-                buffer += data.toString();
+        try {
+            await new Promise((resolve, reject) => {
+                const process = spawn('python', ['./ml/main.py', outputDirectory], {
+                    maxBuffer: 1000 * 1024 * 1024
+                  });
+                process.stdout.on('data', (data) => {
+                    buffer += data.toString();
+                });
+                  
+                process.stderr.on('data', (data) => {
+                    console.error(`stderr: ${data}`);
+                    reject();
+                });
+                
+                process.on('close', (code) => {
+                console.log(`child process exited with code ${code}`);
+                resolve();
+                }); 
             });
-              
-            process.stderr.on('data', (data) => {
-                console.error(`stderr: ${data}`);
-                reject();
-            });
-            
-            process.on('close', (code) => {
-            console.log(`child process exited with code ${code}`);
-            resolve();
-            }); 
-        });
+        } catch {
+            response.status(403).json({msg: "Model component is disabled!"});
+            return;
+        }
         finalPredictions = { ...finalPredictions, ...JSON.parse(buffer) };       
     }
     const imageEntries = Object.entries(finalPredictions);
