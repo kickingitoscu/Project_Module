@@ -26,7 +26,7 @@ save_to_file() {
     # Check if the key exists in the file
     if grep -q "^$key_to_save=" "$file"; then
         # Replace existing value
-        sed -i "s/^$key_to_save=.*/$key_to_save=$value_to_save/" "$file"
+        sed -i "s|^$key_to_save=.*|$key_to_save=$value_to_save|" "$file"
     else
         # Append key-value pair to file
         echo "$key_to_save=$value_to_save" >> "$file"

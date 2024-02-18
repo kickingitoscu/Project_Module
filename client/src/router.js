@@ -12,6 +12,13 @@ const routes = [
     path: "/posts/:param",
     name: "Posts",
     component: Posts,
+    beforeEnter: (to, from, next) => {
+      if (from.path !== '/') {
+        next('/');
+      } else {
+        next();
+      }
+    }
   },
 ];
 
