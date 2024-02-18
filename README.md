@@ -6,6 +6,6 @@ Guidance:
 5. open /usr/src/project in vscode and run "npm ci" for installing project's dependencies
 6. open "/usr/src/project/client" directory and run "npm run build" to build client's files
 7. go back to main directory and execute "npm run start" to start the server
-8. enjoy
+8. enjoy :)
 
 
