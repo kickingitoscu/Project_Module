@@ -38,6 +38,13 @@ export default {
   background-color: white;
   padding: 30px;
   font-size: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.popup-text {
+  margin-bottom: 20px;
 }
 
 .beyond-button {
