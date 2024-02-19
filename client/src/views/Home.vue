@@ -198,9 +198,6 @@ export default {
   margin-bottom: 10px;
 }
 
-.button {
-  width: calc(100% - 20px); /* Adjust width as needed */
-}
 #header {
   background-color: #666666; /* Green background color */
   padding: 1.5% 1.5% 1.5% 4%;

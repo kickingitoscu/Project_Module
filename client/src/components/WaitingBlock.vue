@@ -22,6 +22,10 @@
 .popup-content {
   background-color: white;
   padding: 20px;
-  border-radius: 8px;
+  font-size: 20px;
+}
+
+* {
+  font-family: 'Open Sans', Arial, sans-serif;
 }
 </style>

@@ -2,7 +2,9 @@
   <div class="popup">
     <div class="popup-content">
       <p>{{ popupText }}</p>
-      <button @click="$emit('toggle-popup')">Close</button>
+      <div class="beyond-button">
+        <button @click="$emit('toggle-popup')">Close</button>
+      </div>
     </div>
   </div>
 </template>
@@ -34,11 +36,30 @@ export default {
 
 .popup-content {
   background-color: white;
-  padding: 20px;
+  padding: 30px;
   border-radius: 8px;
+  font-size: 20px;
+}
+
+.beyond-button {
+  padding-top: 20px;
 }
 
 button {
-  margin-top: 10px;
+  height: 30px;
+  width: 100px;/* Adjust width as needed */
+  font-size: 18px;
+  background-color: #EE6A1F;
+  border: 2px solid #EE6A1F; /* Set border color */
+  color: white;
+}
+
+button:hover {
+  background-color: #ad511c; /* color on hover */
+  border: 2px solid #ad511c;
+}
+
+* {
+  font-family: 'Open Sans', Arial, sans-serif;
 }
 </style>
