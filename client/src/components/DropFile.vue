@@ -15,7 +15,7 @@
         class="hidden-input"
         @change="onChange"
         ref="file"
-        accept=".pdf,.jpg,.jpeg,.png"
+        accept=".jpg,.jpeg,.png"
       />
 
       <label for="fileInput" class="file-label">
@@ -26,18 +26,18 @@
         <div v-for="file in files" :key="file.name" class="preview-card">
           <img class="preview-img" :src="generateURL(file)" />
           <p>
-            {{ file.name }}
+            {{ file.name.length > 20 ? file.name.substring(0, 15) + '...'  : file.name }}
           </p>
-        </div>
-        <div>
-          <button
-            class="ml-2"
-            type="button"
-            @click="remove(files.indexOf(file))"
-            title="Remove file"
-          >
-            <b>×</b>
-          </button>
+          <div>
+            <button
+              class="ml-2"
+              type="button"
+              @click="remove(files.indexOf(file))"
+              title="Remove file"
+            >
+              <b>×</b>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -55,6 +55,12 @@ export default {
   methods: {
     onChange(e) {
       e.preventDefault();
+      console.log(this.files);
+      if (Object.keys(this.files).length === 3) {
+        this.files.pop('2')
+        this.$emit('on-error', 'Limit exceeded!');
+        return;
+      }
       console.log(e.target.files);
       this.avoidDuplicates(e.target.files);
       this.flushRefList();
@@ -66,6 +72,7 @@ export default {
       this.$refs.file.files = new DataTransfer().files;
     },
     avoidDuplicates(fileList) {
+      let duplicates = 0;
       let incomingFiles = Array.from(fileList);
       console.log(incomingFiles);
       if (this.files.length > 0) {
@@ -77,11 +84,14 @@ export default {
                 file.size === incomingFile.size,
             )
           ) {
-            // something happens
+            duplicates++;
           } else {
             this.files.push(incomingFile);
           }
         });
+        if (duplicates > 0) {
+          this.$emit('on-error', 'Duplicates found!');
+        }
       } else {
         console.debug("entered");
         this.files.push(...incomingFiles);
@@ -92,11 +102,18 @@ export default {
       e.preventDefault();
       this.isDragging = true;
     },
-    dragleave() {
+    dragleave(e) {
+      e.preventDefault();
       this.isDragging = false;
     },
     drop(e) {
       e.preventDefault();
+      console.log(e.dataTransfer.files);
+      if (Object.keys(this.files).length === 2) {
+        this.isDragging = false;
+        this.$emit('on-error', 'Limit exceeded!');
+        return;
+      } 
       this.onDrop(e.dataTransfer.files);
       this.isDragging = false;
       console.log(this.files.length);
@@ -113,20 +130,19 @@ export default {
     },
   },
 };
+
 </script>
 <style scoped>
 .main {
   display: flex;
   flex-grow: 1;
   align-items: center;
-  height: 100vh;
   justify-content: center;
   text-align: center;
 }
 
 .dropzone-container {
-  padding: 4rem;
-  background: #f7fafc;
+  padding: 7rem; 
   border: 2px dashed;
   border-color: #9e9e9e;
 }
@@ -148,10 +164,10 @@ export default {
 .preview-container {
   display: flex;
   margin-top: 2rem;
+  padding: 5px;
 }
 
 .preview-card {
-  display: flex;
   border: 1px solid #a2a2a2;
   padding: 5px;
   margin-left: 5px;
@@ -165,3 +181,4 @@ export default {
   background-color: #a2a2a2;
 }
 </style>
+
