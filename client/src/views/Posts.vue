@@ -11,9 +11,8 @@ export default {
     };
   },
   async mounted() {
-    // Access the post ID
-    // const postId = this.$route.params.param;
-    const res = await fetch(`/getPosts?id=xd6M5ZpT0IYMvGNJ`);
+    const postId = this.$route.params.param;
+    const res = await fetch(`/getPosts?id=${postId}`);
     const data = await res.json();
     this.images = data.images.map((imageObject, index) => {
       console.debug(index);
