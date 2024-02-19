@@ -37,7 +37,6 @@ export default {
 .popup-content {
   background-color: white;
   padding: 30px;
-  border-radius: 8px;
   font-size: 20px;
 }
 
@@ -47,15 +46,15 @@ export default {
 
 button {
   height: 30px;
-  width: 100px;/* Adjust width as needed */
-  font-size: 18px;
+  width: 100px;
+  font-size: 20px;
   background-color: #EE6A1F;
-  border: 2px solid #EE6A1F; /* Set border color */
+  border: 2px solid #EE6A1F;
   color: white;
 }
 
 button:hover {
-  background-color: #ad511c; /* color on hover */
+  background-color: #ad511c; 
   border: 2px solid #ad511c;
 }
 

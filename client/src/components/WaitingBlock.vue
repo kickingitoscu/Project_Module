@@ -21,7 +21,7 @@
 
 .popup-content {
   background-color: white;
-  padding: 20px;
+  padding: 40px;
   font-size: 20px;
 }
 

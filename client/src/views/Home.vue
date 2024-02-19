@@ -100,15 +100,6 @@ export default {
 </script>
 
 <style>
-/* #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-} */
-
 
 .input-block {
   display: flex;
@@ -135,7 +126,7 @@ export default {
 .input-row label {
   
   text-align: left;
-  padding-bottom: 5px; /* Add some space between input and label */
+  padding-bottom: 5px; 
 }
 
 .button-outer {
@@ -146,24 +137,24 @@ export default {
 
 .input-field {
   font-size: 14px;
-  flex: 1; /* Expand input field to fill remaining space */
+  flex: 1;
   padding: 8px;
   width: 100px;
-  max-width: 50%; /* Set maximum width for input field */
+  max-width: 50%; 
 }
 
 .button {
-  width: 100%; /* Adjust width as needed */
-  max-width: 150px; /* Set maximum width for button */
-  height: 50px; /* Adjust height as needed */
+  width: 100%; 
+  max-width: 150px; 
+  height: 50px; 
   font-size: 18px;
   background-color: #EE6A1F;
-  border: 2px solid #EE6A1F; /* Set border color */
+  border: 2px solid #EE6A1F;
   color: white;
 }
 
 .button:hover {
-  background-color: #ad511c; /* color on hover */
+  background-color: #ad511c; 
   border: 2px solid #ad511c;
 }
 
@@ -174,7 +165,7 @@ export default {
 }
 
 .centered-text {
-  padding: 7.5%; /* Adjust padding as needed */
+  padding: 7.5%;
   font-size: 32px;
 }
 
@@ -191,7 +182,7 @@ export default {
 }
 
 .column {
-  width: 100%; /* Adjust width as needed */
+  width: 100%;
 }
 
 .drag-drop-text {
@@ -199,7 +190,7 @@ export default {
 }
 
 #header {
-  background-color: #666666; /* Green background color */
+  background-color: #666666;
   padding: 1.5% 1.5% 1.5% 4%;
   margin: 0;
   
@@ -211,17 +202,17 @@ export default {
 .small-image {
   position: absolute;
   top: 50%;
-  left: 0.275%; /* Set the left padding in respect to the header */
+  left: 0.275%; 
   transform: translateY(-50%);
-  height: calc(100% - 15%); /* Set image height to 100% of the header minus top and bottom padding */
+  height: calc(100% - 15%); 
   width: auto;
 }
 
 .header-text {
   text-align: center;
-  color: white; /* Adjust text color as needed */
-  flex-grow: 1; /* Allow the text to grow and take up remaining space */
-  font-size: 32px; /* Adjust font size as needed */ 
+  color: white;
+  flex-grow: 1;
+  font-size: 32px; 
 }
 
 * {

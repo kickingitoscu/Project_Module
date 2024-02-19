@@ -19,6 +19,10 @@ function makeid(length) {
   return result;
 }
 
+function removeUserFolder(userFolder) {
+  fs.rmSync(userFolder, { recursive: true, force: true });
+}
+
 dotenv.config();
 const application = express();
 const storage = multer.diskStorage({
@@ -69,19 +73,23 @@ router["post"](
     { name: "subheader", maxCount: 1 },
   ]),
   async (request, response) => {
+    const basePath = `./uploads/${request.sessionID}`;
+    console.log(request.sessionID);
     if (!request.body.header || !request.body.subheader) {
+      removeUserFolder(basePath);
       response
         .status(403)
         .json({ msg: "Either header or subheader is not specified!" });
       return;
     }
     if (!("images" in request.files)) {
+      removeUserFolder(basePath);
       response.status(403).json({ msg: "No images provided!" });
       return;
     }
 
     let buffer = "";
-    const basePath = `./uploads/${request.sessionID}`;
+    
     try {
       await new Promise((resolve, reject) => {
         const process = spawn("python", [
@@ -105,6 +113,7 @@ router["post"](
         });
       });
     } catch {
+      removeUserFolder(basePath);
       response
         .status(403)
         .json({ msg: "Design principle component does not work!" });
@@ -124,6 +133,7 @@ router["post"](
     }
 
     if (fs.readdirSync(`${basePath}/raw`).length === 0) {
+      removeUserFolder(basePath);
       response
         .status(403)
         .json({
@@ -160,12 +170,12 @@ router["post"](
             reject();
           });
 
-          process.on("close", (code) => {
-            console.log(`child process exited with code ${code}`);
+          process.on("close", () => {
             resolve();
           });
         });
       } catch {
+        removeUserFolder(basePath);
         response.status(403).json({ msg: "Unexpected bash error!" });
         return;
       }
@@ -197,6 +207,7 @@ router["post"](
           });
         });
       } catch {
+        removeUserFolder(basePath);
         response.status(403).json({ msg: "Generator is disabled!" });
         return;
       }
@@ -226,6 +237,7 @@ router["post"](
           });
         });
       } catch {
+        removeUserFolder(basePath);
         response.status(403).json({ msg: "Model component is disabled!" });
         return;
       }
@@ -256,7 +268,7 @@ router["post"](
       );
     }
 
-    fs.rmSync(basePath, { recursive: true, force: true });
+    removeUserFolder(basePath);
     response.json({
       ok: true,
       id: folderId,
@@ -275,7 +287,7 @@ router["get"]("/getPosts", (req, res) => {
       data: fileData.toString("base64"),
     });
   }
-  fs.rmSync(base, { recursive: true, force: true });
+  removeUserFolder(base);
   res.json({ images: files });
 });
 

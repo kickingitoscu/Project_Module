@@ -1,16 +1,4 @@
-<template>
-  <div v-if="images.length > 0">
-    <div class="image-wrapper">
-      <div v-for="(image, index) in images" :key="index" class="image-item">
-        <img :src="image.url" alt="Image" class="image" />
-        <div class="beauty-rank">Beauty Rank: {{ image.rank }}</div>
-      </div>
-    </div>
-    <button @click="downloadImages" class="download-button">
-      Download All
-    </button>
-  </div>
-</template>
+
 
 <script>
 import JSZip from "jszip";
@@ -24,8 +12,8 @@ export default {
   },
   async mounted() {
     // Access the post ID
-    const postId = this.$route.params.param;
-    const res = await fetch(`/getPosts?id=${postId}`);
+    // const postId = this.$route.params.param;
+    const res = await fetch(`/getPosts?id=xd6M5ZpT0IYMvGNJ`);
     const data = await res.json();
     this.images = data.images.map((imageObject, index) => {
       console.debug(index);
@@ -61,33 +49,151 @@ export default {
       link.download = "images.zip";
       link.click();
     },
+    getHomePage() {
+      this.$router.push(`/`);
+    }
   },
 };
 </script>
 
+<template>
+  <div class="container">
+    <div class="centered-text">
+      These are the generated posts with highest beauty rank!
+    </div>
+    <div class="image-container">
+      <div class="image-wrapper">
+        <div class="image-items-container">
+          <div v-for="(image, index) in images" :key="index" class="image-item">
+            <img :src="image.url" alt="Image" class="image-with-border" />
+            <div class="beauty-rank">Beauty Rank: {{ image.rank }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="button-wrapper">
+      <div class="button-container">
+        <button @click="downloadImages" class="download-button">
+          Download All
+        </button>
+      </div>
+      <div class="button-container">
+        <button @click="getHomePage" class="home-button">
+          Back to Homepage
+        </button>
+      </div>
+    </div>
+  </div>
+</template>
+
 <style>
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.centered-text {
+  padding: 4.5%; 
+  font-size: 32px;
+}
+
 .image-container {
-  width: 100%;
-  overflow-x: auto;
-  white-space: nowrap;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50vh;
+  overflow: hidden;
+  width: 100%; 
+  margin: 0px;
+}
+
+.image-items-container {
+  display: flex;
+  padding-top: 10px;
+}
+
+.image-item:last-child {
+  padding-right: 20px;
 }
 
 .image-wrapper {
-  display: inline-block;
+  display: flex;
+  flex-wrap: nowrap;
+  border: 1px solid #ccc;
+  padding: 10px;
+  overflow-x: auto;
+  width: 80%; 
+  margin: 0 auto; 
 }
 
 .image-item {
-  display: inline-block;
-  margin-right: 10px;
+  flex: 0 0 auto; 
+  padding: 10px;
+  text-align: center;
 }
 
-.image {
-  width: 200px;
+.image-with-border {
+  max-width: 300px;
   height: auto;
+  border: 1px solid #000;
 }
 
 .beauty-rank {
-  font-size: 14px;
-  color: #888;
+  font-size: 20px;
+  color: #666666;
+  margin-top: 10px;
 }
+
+.button-wrapper {
+  display: flex;
+  justify-content: center;
+  padding-top: 15px;
+}
+
+.button-container {
+  padding: 0 10px; 
+}
+
+.download-button {
+  width: 100%; 
+  max-width: 150px; 
+  height: 50px; 
+  font-size: 18px;
+  background-color: #EE6A1F;
+  border: 2px solid #EE6A1F; 
+  color: white;
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.3s ease;
+}
+
+.home-button {
+  width: 100%; 
+  max-width: 150px; 
+  height: 50px; 
+  font-size: 18px;
+  color: white;
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.3s ease;
+  background-color: #666;
+  border: 2px solid #666;
+}
+
+.home-button:hover {
+  background-color: #363434; 
+  border: 2px solid #363434;
+}
+
+.download-button:hover {
+  background-color: #ad511c;
+  border: 2px solid #ad511c;
+}
+
+* {
+  font-family: 'Open Sans', Arial, sans-serif;
+}
+
 </style>
